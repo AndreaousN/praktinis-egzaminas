@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <style>
+        .gradient-custom {
+            background-color: #FBDD5D;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        .table td, .table th {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
+    </style>
+</head>
+<body class="gradient-custom">
+<div th:insert="header :: header"></div>
+<section class="vh-100">
+    <div class="container-fluid py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-10 col-lg-10 col-xl-10">
+                <div class="card bg-dark text-white" style="border-radius: 1rem;">
+                    <div class="card-body p-5 text-center">
+                        <div class="mb-md-0 mt-md-4 pb-2 table-container">
+                            <h2 class="fw-bold mb-5 text-uppercase">Catering institution list</h2>
+                            <form th:action="@{/dashboard/search}" method="get" class="mb-4">
+                                <div class="input-group">
+                                    <input type="text" name="query" class="form-control" placeholder="Search for catering institutions by name...">
+                                    <button class="btn btn-primary" type="submit">Search</button>
+                                </div>
+                            </form>
+                            <table class="table table-dark table-striped">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Catering Name</th>
+                                    <th scope="col">Code</th>
+                                    <th scope="col">Address</th>
+                                    <th scope="col">Options</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="catering : ${cateringList}">
+                                    <td th:text="${catering.name}" data-bs-toggle="tooltip" data-bs-placement="top" th:attr="title=${catering.name}"></td>
+                                    <td th:text="${catering.code}"></td>
+                                    <td th:text="${catering.address}"></td>
+                                    <td>
+                                        <span sec:authorize="hasAuthority('ADMIN')">
+                                            <a th:href="@{/catering/edit/{id}(id=${catering.id})}" style="text-decoration: none; cursor: pointer;">Edit</a> |
+                                            <span style="color: red; cursor: pointer;" th:attr="onclick='confirmDelete(\'' + ${catering.id} + '\')'">Delete</span> |
+                                        </span>
+
+                                    </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    function confirmDelete(id) {
+        if (confirm("Are you sure you want to delete this catering?")) {
+            window.location.href = "/catering/delete/" + id;
+        }
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    });
+</script>
+</body>
+</html>
